@@ -19,6 +19,8 @@ export class GroupsController {
         };
     }
 
+    @HttpCode(HttpStatus.OK)
+    @Get()
     async getGroups(): Promise<Object> {
         return {
             data: {
@@ -27,6 +29,8 @@ export class GroupsController {
         }
     }
 
+    @HttpCode(HttpStatus.OK)
+    @Get(':id')
     async getGroupById(@Param('id', ParseIntPipe) id: number): Promise<Object> {
         return {
             data: {
@@ -35,6 +39,8 @@ export class GroupsController {
         }
     }
 
+    @HttpCode(HttpStatus.OK)
+    @Delete(':id')
     async deleteGroupById(@Param('id', ParseIntPipe) id: number): Promise<Object> {
         await this.groupsService.deleteGroupById(id);
 
@@ -43,6 +49,8 @@ export class GroupsController {
         };
     }
 
+    @HttpCode(HttpStatus.OK)
+    @Put(':id')
     async updateGroupById(@Param('id', ParseIntPipe) id: number, @Body() updatedGroup: GroupsDto): Promise<Object> {
         await this.groupsService.updateGroupById(id, updatedGroup);
 

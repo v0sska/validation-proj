@@ -4,6 +4,7 @@ import { Repository } from "typeorm";
 import { Groups } from "./groups.entity";
 import { GroupsDto } from "./groups.dto";
 import { Labels } from "src/labels/labels.entity";
+import { HttpException, HttpStatus } from "@nestjs/common";
 
 @Injectable()
 export class GroupsService {
@@ -21,7 +22,7 @@ export class GroupsService {
         const label = await this.labelsRepository.findOne({ where: { id: group.label } });
 
         if(!label){
-            throw new Error('Label not found');
+            throw new HttpException('Label not found', HttpStatus.NOT_FOUND);
         }
 
         let groupToSave = new Groups();
@@ -34,11 +35,11 @@ export class GroupsService {
     }
 
     async getGroups(): Promise<Groups[]> {
-        return this.groupsRepository.find();
+        return this.groupsRepository.find({ relations: ['label'] });
     }
 
     async getGroupById(id: number): Promise<Groups> {
-        return this.groupsRepository.findOneBy( {id} );
+        return this.groupsRepository.findOne({ where: { id }, relations: ['label'] });
     }
 
     async deleteGroupById(id: number): Promise<void> {
@@ -50,7 +51,7 @@ export class GroupsService {
         const label = await this.labelsRepository.findOne({ where: { id: group.label } });
 
         if(!label){
-            throw new Error('Label not found');
+            throw new HttpException('Label not found', HttpStatus.NOT_FOUND);
         }
 
         let groupToUpdate = new Groups();
