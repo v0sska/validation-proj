@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Groups } from 'src/groups/groups.entity';
 
 @Entity()
 export class Labels{
@@ -11,4 +12,7 @@ export class Labels{
 
     @Column()
     founded: number;
+
+    @OneToMany(() => Groups, group => group.label)
+    groups: Groups[];
 }
