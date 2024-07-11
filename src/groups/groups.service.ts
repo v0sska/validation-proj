@@ -5,6 +5,7 @@ import { Groups } from "./groups.entity";
 import { GroupsDto } from "./groups.dto";
 import { Labels } from "src/labels/labels.entity";
 
+@Injectable()
 export class GroupsService {
     constructor(
         @InjectRepository(Groups)
