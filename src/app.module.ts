@@ -4,6 +4,8 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { LabelsModule } from './labels/labels.module';
 import { Labels } from './labels/labels.entity';
+import { Groups } from './groups/groups.entity';
+import { GroupsModule } from './groups/groups.module';
 
 @Module({
   imports: [
@@ -14,10 +16,11 @@ import { Labels } from './labels/labels.entity';
       username: 'admin',
       password: 'root',
       database: 'music_label_data',
-      entities: [Labels],
+      entities: [Labels, Groups],
       synchronize: true,
     }),
     LabelsModule,
+    GroupsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
