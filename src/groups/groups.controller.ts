@@ -59,5 +59,16 @@ export class GroupsController {
         };
     }
 
+    @HttpCode(HttpStatus.OK)
+    @Post('search')
+    async searchGroups(@Body() searchParams: any): Promise<Object> {
+        const { labelId, size = 10, from = 0, genre } = searchParams;
+
+        return {
+            data: {
+                groups: await this.groupsService.listGroupByCriteria(labelId, size, from, genre)
+            }
+        };
+    }
 
 }

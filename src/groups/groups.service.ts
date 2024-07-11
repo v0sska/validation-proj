@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { Repository, FindManyOptions } from "typeorm";
 import { Groups } from "./groups.entity";
 import { GroupsDto } from "./groups.dto";
 import { Labels } from "src/labels/labels.entity";
@@ -63,6 +63,26 @@ export class GroupsService {
         await this.groupsRepository.update(id, groupToUpdate);
     }
 
+    async listGroupByCriteria(labelId?: number, size: number = 10, from: number = 0, genre?: string): Promise<Groups[]> {
+        let whereOptions: FindManyOptions<Groups> = {
+            take: size,
+            skip: from,
+            relations: ['label']
+        };
+
+        if (labelId) {
+            const labelToFind = await this.labelsRepository.findOne({ where: { id: labelId }});
+            if (labelToFind) {
+                whereOptions.where = { label: labelToFind };
+            }
+        }
+
+        if (genre) {
+            whereOptions.where = { ...whereOptions.where, genre };
+        }
+
+        return this.groupsRepository.find(whereOptions);
+    }
 
 }
  
