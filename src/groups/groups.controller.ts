@@ -3,7 +3,6 @@ import { GroupsDto } from "./groups.dto";
 import { GroupsService } from "./groups.service";
 import { HttpCode } from "@nestjs/common";
 import { HttpStatus } from "@nestjs/common";
-import { group } from "console";
 
 @Controller('groups')
 export class GroupsController {
@@ -60,7 +59,7 @@ export class GroupsController {
     }
 
     @HttpCode(HttpStatus.OK)
-    @Post('search')
+    @Post('_find')
     async searchGroups(@Body() searchParams: any): Promise<Object> {
         const { labelId, size = 10, from = 0, genre } = searchParams;
 
