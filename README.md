@@ -4,13 +4,13 @@ App uses a postgresql database for store data.
 
 ## Run app
 
-$ npm run docker
+    $ npm run docker
 
-$ npm run start:dev
+    $ npm run start:dev
 
-    or
+or
 
-$ npm run start
+    $ npm run start
 
 
 ## Examples 
