@@ -87,7 +87,7 @@ export class GroupsService {
         return this.groupsRepository.find(whereOptions);
     }
 
-    async importGroupsFromFile(file: any): Promise<number> {
+    async importGroupsFromFile(file: Express.Multer.File): Promise<number> {
 
         if(!file){
             throw new HttpException('File not found', HttpStatus.NOT_FOUND);

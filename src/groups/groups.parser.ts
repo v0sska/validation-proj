@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import { Labels } from "src/labels/labels.entity";
 import { GroupsDto } from "./groups.dto";
-import { GroupsService } from "./groups.service";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import fs from 'fs';
+import { HttpException, HttpStatus } from "@nestjs/common";
+import * as fs from 'fs';
 
 @Injectable()
 export class JsonFileParser {
@@ -13,32 +13,47 @@ export class JsonFileParser {
     private labelsRepository: Repository<Labels>
     ) {}
 
-    async parseJsonFile(fileToRead: any): Promise<GroupsDto[]> {
+    async parseJsonFile(file: Express.Multer.File): Promise<GroupsDto[]> {
         const groupsToSave: GroupsDto[] = [];
-
-        const file = fs.readFileSync(fileToRead.path, 'utf8');
-
-        const fileData = JSON.parse(file);
-
-        const labels = fileData.labels.map(labelData => {
-            const label = new Labels();
-            label.name = labelData.name;
-            if (labelData.founded) {
-              label.founded = labelData.founded;
+    
+        const fileContent = file.buffer.toString('utf8');
+        const fileData = JSON.parse(fileContent);
+    
+        if (!Array.isArray(fileData)) {
+            throw new HttpException('Invalid JSON format: expected an array', HttpStatus.BAD_REQUEST);
+        }
+    
+        const labelsMap = new Map<string, Labels>();
+    
+        for (const entry of fileData) {
+            const { label, founded_year } = entry;
+    
+            if (!labelsMap.has(label)) {
+                const newLabel = new Labels();
+                newLabel.name = label;
+                newLabel.founded = founded_year;
+                labelsMap.set(label, newLabel);
             }
-            return label;
-          });
-
-        await this.labelsRepository.save(labels);
-
-        fileData.groups.forEach(groupData => {
-            const group = new GroupsDto();
-            group.name = groupData.name;
-            group.genre = groupData.genre;
-            group.label = labels.find(label => label.name === groupData.label).id;
-            groupsToSave.push(group);
-        });
-
+        }
+    
+        const savedLabels = await this.labelsRepository.save(Array.from(labelsMap.values()));
+    
+        const savedLabelsMap = new Map<string, number>();
+        savedLabels.forEach(label => savedLabelsMap.set(label.name, label.id));
+    
+        for (const entry of fileData) {
+            const { label, group, genre } = entry;
+    
+            const groupDto = new GroupsDto();
+            groupDto.name = group;
+            groupDto.genre = genre;
+            groupDto.label = savedLabelsMap.get(label);
+    
+            groupsToSave.push(groupDto);
+        }
+    
         return groupsToSave;
     }
+    
+    
 }
