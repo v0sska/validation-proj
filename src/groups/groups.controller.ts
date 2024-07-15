@@ -1,8 +1,9 @@
-import { Controller, Post, Get, Put, Delete, Param, Body, ParseIntPipe } from "@nestjs/common";
+import { Controller, Post, Get, Put, Delete, Param, Body, ParseIntPipe, UseInterceptors, UploadedFile } from "@nestjs/common";
 import { GroupsDto } from "./groups.dto";
 import { GroupsService } from "./groups.service";
 import { HttpCode } from "@nestjs/common";
 import { HttpStatus } from "@nestjs/common";
+import { FileInterceptor } from "@nestjs/platform-express";
 
 @Controller('groups')
 export class GroupsController {
@@ -68,6 +69,16 @@ export class GroupsController {
                 groups: await this.groupsService.listGroupByCriteria(labelId, size, from, genre)
             }
         };
+    }
+
+    @Post('upload')
+    @UseInterceptors(FileInterceptor('file'))
+    async uploadGroupsFromFile(@UploadedFile() file: Express.Multer.File): Promise<Object> {
+        return {
+            message: 'Groups imported successfully',
+            count: await this.groupsService.importGroupsFromFile(file)
+        };
+
     }
 
 }

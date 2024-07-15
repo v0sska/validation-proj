@@ -124,7 +124,6 @@ export class GroupsService {
 
         return convertedGroup;
     }
-   
-    
+
 }
  

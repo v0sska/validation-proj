@@ -9,8 +9,6 @@ import fs from 'fs';
 @Injectable()
 export class JsonFileParser {
     constructor(
-    private readonly groupsService: GroupsService, 
-
     @InjectRepository(Labels)
     private labelsRepository: Repository<Labels>
     ) {}
