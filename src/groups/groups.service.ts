@@ -5,6 +5,7 @@ import { Groups } from "./groups.entity";
 import { GroupsDto } from "./groups.dto";
 import { Labels } from "src/labels/labels.entity";
 import { HttpException, HttpStatus } from "@nestjs/common";
+import { JsonFileParser } from "./groups.parser";
 
 @Injectable()
 export class GroupsService {
@@ -13,7 +14,9 @@ export class GroupsService {
         private groupsRepository: Repository<Groups>,
 
         @InjectRepository(Labels)
-        private labelsRepository: Repository<Labels>
+        private labelsRepository: Repository<Labels>,
+
+        private readonly jsonFileParser: JsonFileParser
 
     ) {}
 
@@ -84,5 +87,12 @@ export class GroupsService {
         return this.groupsRepository.find(whereOptions);
     }
 
+    async importGroupsFromFile(file: any): Promise<Groups[]> {
+        const importedGroups = [];
+
+        return importedGroups;
+
+    }
+    
 }
  
