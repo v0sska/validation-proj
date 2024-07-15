@@ -87,12 +87,44 @@ export class GroupsService {
         return this.groupsRepository.find(whereOptions);
     }
 
-    async importGroupsFromFile(file: any): Promise<Groups[]> {
-        const importedGroups = [];
+    async importGroupsFromFile(file: any): Promise<number> {
 
-        return importedGroups;
+        if(!file){
+            throw new HttpException('File not found', HttpStatus.NOT_FOUND);
+        }
 
+        if(file.mimetype !== 'application/json'){
+            throw new HttpException('Invalid file format', HttpStatus.BAD_REQUEST);
+        }
+
+      
+        const recievedGroups = await this.jsonFileParser.parseJsonFile(file);
+
+        const groupsToSave = await Promise.all(recievedGroups.map(async group => {
+            return await this.groupDtoToEntity(group);
+        }));
+
+        await this.groupsRepository.save(groupsToSave);
+
+        return groupsToSave.length;
     }
+
+    private async groupDtoToEntity(group: GroupsDto): Promise<Groups> {
+        const label = await this.labelsRepository.findOne({ where: { id: group.label } });
+
+        if(!label){
+            throw new HttpException('Label not found', HttpStatus.NOT_FOUND);
+        }
+
+        let convertedGroup = new Groups();
+
+        convertedGroup.name = group.name;
+        convertedGroup.genre = group.genre;
+        convertedGroup.label = label;
+
+        return convertedGroup;
+    }
+   
     
 }
  
